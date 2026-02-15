@@ -1,6 +1,6 @@
 # HRMS Agent — AI-Powered HR Management System
 
-An agentic HRMS assistant built with **FastAPI + OpenAI + React**, fully containerized with **Docker**.
+An agentic HRMS assistant built with **FastAPI + OpenAI + MongoDB + React**, fully containerized with **Docker**.
 
 ---
 
@@ -27,7 +27,7 @@ An agentic HRMS assistant built with **FastAPI + OpenAI + React**, fully contain
 │  (port 3000)│ <────── │  Backend     │ <────── │  API     │
 └────────────┘         │  (port 8000) │         └──────────┘
                        │              │
-                       │  SQLite DB   │
+                       │  MongoDB     │
                        │  HRMS Tools  │
                        └──────────────┘
 ```
@@ -110,16 +110,35 @@ Project/
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── .env
 │   ├── .env.example
 │   └── app/
 │       ├── __init__.py
-│       ├── main.py           # FastAPI app + routes
-│       ├── agent.py          # LLM agent with tool calling
-│       ├── tools.py          # HRMS tool definitions + implementations
-│       ├── models.py         # Pydantic + SQLAlchemy models
-│       ├── database.py       # DB engine + session
-│       └── seed_data.py      # Demo data seeder
+│       ├── main.py                # FastAPI app entry point
+│       ├── config.py              # App settings & env vars
+│       ├── exceptions.py          # Custom exceptions
+│       ├── agent/
+│       │   ├── orchestrator.py    # LLM agent with tool calling
+│       │   ├── prompt_templates.py
+│       │   ├── tool_executor.py
+│       │   └── tools.py           # HRMS tool definitions
+│       ├── auth/
+│       │   ├── dependencies.py
+│       │   ├── jwt_handler.py
+│       │   ├── oauth_providers.py
+│       │   └── service.py
+│       ├── cache/
+│       │   ├── faq_registry.py
+│       │   └── query_cache.py
+│       ├── database/
+│       │   ├── mongodb.py         # Motor + Beanie ODM setup
+│       │   └── seed.py            # Demo data seeder
+│       ├── middleware/
+│       │   ├── error_handler.py
+│       │   └── logging_middleware.py
+│       ├── models/                # Beanie document models
+│       ├── repositories/          # Data access layer
+│       ├── routes/                # API route handlers
+│       └── services/              # Business logic layer
 └── frontend/
     ├── Dockerfile
     ├── nginx.conf
@@ -132,16 +151,18 @@ Project/
         ├── App.css
         ├── api.js
         └── components/
+            ├── AddEmployeeForm.js
             ├── ChatPanel.js
-            ├── Sidebar.js
-            └── MessageBubble.js
+            ├── LoginPage.js
+            ├── MessageBubble.js
+            └── Sidebar.js
 ```
 
 ---
 
 ## Tech Stack
 
-- **Backend:** Python 3.12, FastAPI, OpenAI SDK, SQLAlchemy, SQLite
+- **Backend:** Python 3.12, FastAPI, OpenAI SDK, Motor, Beanie ODM, MongoDB
 - **Frontend:** React 18, Axios, React Markdown, React Icons
 - **Containerization:** Docker, Docker Compose, Nginx
 - **AI:** OpenAI GPT with function/tool calling
